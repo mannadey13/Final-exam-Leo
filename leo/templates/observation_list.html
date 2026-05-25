@@ -6,6 +6,23 @@
 
 
 <h2>Observations</h2>
+<table>
+    <tr>
+        <th>Member ID</th>
+        <th>Insect ID</th>
+        <th>Location ID</th>
+        <th>Observation Date</th>
+    </tr>
+
+    {% for observation in observations %}
+    <tr>
+        <td>{{ observation[0] }}</td>
+        <td>{{ observation[1] }}</td>
+        <td>{{ observation[2] }}</td>
+        <td>{{ observation[3] }}</td>
+    </tr>
+    {% endfor %}
+</table>
 
 <!-- Display a list of students and their details as specified in assessment brief -->
 

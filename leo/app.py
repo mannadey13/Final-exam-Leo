@@ -42,8 +42,20 @@ def members_list():
 
 @app.route("/observations")
 def observation_list():
-    # Add your code here to list observations
-    return render_template("observations_list.html")
+    connection = db.get_db()
+    cursor = connection.cursor()
+    querystr = """
+    SELECT member_id, insect_id, location_id, observation_date
+    FROM observations
+    ORDER BY observation_date DESC;
+  """
+    cursor.execute(querystr)
+    observations = cursor.fetchall()
+    cursor.close()
+    return render_template(
+        "observation_list.html",
+        observations=observations
+    ) 
 
 
 # Add other routes and view functions as required.
