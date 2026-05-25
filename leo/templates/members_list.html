@@ -10,21 +10,29 @@
     are correctly configured.</strong>  </p>
 
 <table border="1" cellpadding="10" cellspacing="0" width="100%" style="border-collapse: collapse;">
+
     <style>
-table, th, td {
-    border: 1px solid black;
-}
-</style>
+    table, th, td {
+        border: 1px solid black;
+    }
+    </style>
+
     <tr>
         <th>Member ID</th>
         <th>Name</th>
+        <th>Email</th>
+        <th>Phone</th>
     </tr>
+
     {% for member in members %}
     <tr>
-        <td>{{ member.member_id }}</td>
-        <td>{{member.first_name}} {{member.last_name}}</td>
+        <td>{{ member[0] }}</td>
+        <td>{{ member[1] }} {{ member[2] }}</td>
+        <td>{{ member[3] }}</td>
+        <td>{{ member[4] }}</td>
     </tr>
     {% endfor %}
+
 </table>
 
 

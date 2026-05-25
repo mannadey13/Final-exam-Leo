@@ -26,18 +26,33 @@ def home():
     return render_template("home.html")
 
 
-@app.route("/members", methods=["GET"])
+@app.route("/members")
 def members_list():
-    cursor = db.get_cursor()
-    # List all members        
-    querystr = "SELECT member_id, first_name, last_name FROM members;" 
-    cursor.execute(querystr)        
+
+    connection = db.get_db()
+    cursor = connection.cursor()
+
+    querystr = """
+    SELECT
+        member_id,
+        first_name,
+        last_name,
+        email,
+        phone
+    FROM members
+    ORDER BY member_id ASC;
+    """
+
+    cursor.execute(querystr)
+
     members = cursor.fetchall()
+
     cursor.close()
-    if True:  # Example condition for a flash message
-        flash("Example of a flash message. Optional, but good for error or confirmation " \
-            "messages when used with an IF statement.", "info")
-    return render_template("members_list.html", members=members)
+
+    return render_template(
+        "members_list.html",
+        members=members
+    )
 
 
 @app.route("/observations")
@@ -71,8 +86,43 @@ def observation_list():
     return render_template(
         "observation_list.html",
         observations=observations
-    ) 
+    )
+    
+@app.route("/add_member", methods=["GET", "POST"])
+def add_member():
 
+    if request.method == "POST":
+
+        first_name = request.form.get("first_name")
+        last_name = request.form.get("last_name")
+        email = request.form.get("email")
+        phone = request.form.get("phone")
+
+        connection = db.get_db()
+        cursor = connection.cursor()
+
+        querystr = """
+        INSERT INTO members
+        (first_name, last_name, email, phone)
+        VALUES (%s, %s, %s, %s);
+        """
+
+        cursor.execute(querystr, (
+            first_name,
+            last_name,
+            email,
+            phone
+        ))
+
+        connection.commit()
+
+        cursor.close()
+
+        flash("Member added successfully!", "success")
+
+        return redirect(url_for("members_list"))
+
+    return render_template("add_member.html")
 
 # Add other routes and view functions as required.
 
