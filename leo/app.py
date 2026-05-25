@@ -44,11 +44,27 @@ def members_list():
 def observation_list():
     connection = db.get_db()
     cursor = connection.cursor()
+    
     querystr = """
-    SELECT member_id, insect_id, location_id, observation_date
+    SELECT 
+        members.first_name,
+        insects.insect_name,
+        locations.location_name,
+        observations.observation_date
+
     FROM observations
-    ORDER BY observation_date DESC;
-  """
+
+    JOIN members
+    ON observations.member_id = members.member_id
+
+    JOIN insects
+    ON observations.insect_id = insects.insect_id
+
+    JOIN locations
+    ON observations.location_id = locations.location_id
+
+    ORDER BY observations.observation_date DESC;
+   """
     cursor.execute(querystr)
     observations = cursor.fetchall()
     cursor.close()
