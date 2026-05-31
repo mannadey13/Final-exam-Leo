@@ -94,28 +94,52 @@ def member_detail(member_id):
     """
 
     cursor.execute(querystr, (member_id,))
-
     member = cursor.fetchone()
+
+    querystr = """
+    SELECT
+        insects.insect_name,
+        locations.location_name,
+        observations.observation_date
+
+    FROM observations
+
+    JOIN insects
+    ON observations.insect_id = insects.insect_id
+
+    JOIN locations
+    ON observations.location_id = locations.location_id
+
+    WHERE observations.member_id = %s
+
+    ORDER BY locations.location_name,
+             observations.observation_date;
+    """
+
+    cursor.execute(querystr, (member_id,))
+    observations = cursor.fetchall()
 
     cursor.close()
 
     return render_template(
         "member_detail.html",
-        member=member
+        member=member,
+        observations=observations
     )
 
 
 @app.route("/observations")
 def observation_list():
+
     connection = db.get_db()
     cursor = connection.cursor()
-    
+
     querystr = """
-    SELECT 
-        members.first_name,
-        insects.insect_name,
-        locations.location_name,
-        observations.observation_date
+SELECT
+    members.first_name,
+    insects.insect_name,
+    locations.location_name,
+    observations.observation_date
 
     FROM observations
 
@@ -129,10 +153,14 @@ def observation_list():
     ON observations.location_id = locations.location_id
 
     ORDER BY observations.observation_date DESC;
-   """
+    """
+
     cursor.execute(querystr)
+
     observations = cursor.fetchall()
+
     cursor.close()
+
     return render_template(
         "observation_list.html",
         observations=observations

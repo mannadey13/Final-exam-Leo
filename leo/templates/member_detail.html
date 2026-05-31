@@ -14,6 +14,29 @@
 
 <br>
 
+<h3>Observations</h3>
+
+<table border="1" cellpadding="10" cellspacing="0">
+    <tr>
+        <th>Insect</th>
+        <th>Location</th>
+        <th>Date</th>
+    </tr>
+
+    {% for observation in observations %}
+    <tr>
+        <td>{{ observation[0] }}</td>
+        <td>{{ observation[1] }}</td>
+        <td>{{ observation[2] }}</td>
+    </tr>
+    {% endfor %}
+
+</table>
+
+<br>
+
 <a href="/members">Back to Members</a>
+
+
 
 {% endblock %}
