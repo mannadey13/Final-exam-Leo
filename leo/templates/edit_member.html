@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Member{% endblock %}
+
+{% block content %}
+
+<h2>Edit Member</h2>
+
+<form method="POST">
+
+    <p>
+        First Name:<br>
+        <input type="text" name="first_name" value="{{ member[1] }}">
+    </p>
+
+    <p>
+        Last Name:<br>
+        <input type="text" name="last_name" value="{{ member[2] }}">
+    </p>
+
+    <p>
+        Email:<br>
+        <input type="email" name="email" value="{{ member[3] }}">
+    </p>
+
+    <p>
+        Phone:<br>
+        <input type="text" name="phone" value="{{ member[4] }}">
+    </p>
+
+    <button type="submit">Save Changes</button>
+
+</form>
+
+<br>
+
+<a href="{{ url_for('member_detail', member_id=member[0]) }}">
+    Cancel
+</a>
+
+{% endblock %}

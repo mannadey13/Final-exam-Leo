@@ -126,6 +126,69 @@ def member_detail(member_id):
         member=member,
         observations=observations
     )
+    
+@app.route("/edit_member/<int:member_id>", methods=["GET", "POST"])
+def edit_member(member_id):
+
+    connection = db.get_db()
+    cursor = connection.cursor()
+
+    if request.method == "POST":
+
+        first_name = request.form.get("first_name")
+        last_name = request.form.get("last_name")
+        email = request.form.get("email")
+        phone = request.form.get("phone")
+
+        querystr = """
+        UPDATE members
+        SET first_name = %s,
+            last_name = %s,
+            email = %s,
+            phone = %s
+        WHERE member_id = %s;
+        """
+
+        cursor.execute(querystr, (
+            first_name,
+            last_name,
+            email,
+            phone,
+            member_id
+        ))
+
+        connection.commit()
+
+        cursor.close()
+
+        flash("Member updated successfully!", "success")
+
+        return redirect(url_for("member_detail", member_id=member_id))
+
+    querystr = """
+    SELECT
+        member_id,
+        first_name,
+        last_name,
+        email,
+        phone
+    FROM members
+    WHERE member_id = %s;
+    """
+
+    cursor.execute(querystr, (member_id,))
+
+    member = cursor.fetchone()
+
+    cursor.close()
+
+    return render_template(
+        "edit_member.html",
+        member=member
+    )
+
+
+
 
 @app.route("/observation/<int:member_id>/<observation_date>")
 def observation_detail(member_id, observation_date):
@@ -204,6 +267,40 @@ ORDER BY observations.observation_date DESC;
         "observation_list.html",
         observations=observations
     )
+    
+    
+@app.route("/insect_report")
+def insect_report():
+
+    connection = db.get_db()
+    cursor = connection.cursor()
+
+    querystr = """
+    SELECT
+        insects.insect_name,
+        COUNT(DISTINCT observations.location_id) AS location_count,
+        COUNT(*) AS observation_count
+
+    FROM insects
+
+    LEFT JOIN observations
+    ON insects.insect_id = observations.insect_id
+
+    GROUP BY insects.insect_name
+
+    ORDER BY insects.insect_name;
+    """
+
+    cursor.execute(querystr)
+
+    insects = cursor.fetchall()
+
+    cursor.close()
+
+    return render_template(
+        "insect_report.html",
+        insects=insects
+    )    
     
 @app.route("/add_member", methods=["GET", "POST"])
 def add_member():
