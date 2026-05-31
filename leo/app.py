@@ -127,19 +127,18 @@ def member_detail(member_id):
         observations=observations
     )
 
-
-@app.route("/observations")
-def observation_list():
+@app.route("/observation/<int:member_id>/<observation_date>")
+def observation_detail(member_id, observation_date):
 
     connection = db.get_db()
     cursor = connection.cursor()
 
     querystr = """
-SELECT
-    members.first_name,
-    insects.insect_name,
-    locations.location_name,
-    observations.observation_date
+    SELECT
+        members.first_name,
+        insects.insect_name,
+        locations.location_name,
+        observations.observation_date
 
     FROM observations
 
@@ -152,7 +151,47 @@ SELECT
     JOIN locations
     ON observations.location_id = locations.location_id
 
-    ORDER BY observations.observation_date DESC;
+    WHERE observations.member_id = %s
+    AND observations.observation_date = %s;
+    """
+
+    cursor.execute(querystr, (member_id, observation_date))
+
+    observation = cursor.fetchone()
+
+    cursor.close()
+
+    return render_template(
+        "observation_detail.html",
+        observation=observation
+    )
+    
+@app.route("/observations")
+def observation_list():
+
+    connection = db.get_db()
+    cursor = connection.cursor()
+
+    querystr = """
+SELECT
+    observations.member_id,
+    members.first_name,
+    insects.insect_name,
+    locations.location_name,
+    observations.observation_date
+
+FROM observations
+
+JOIN members
+ON observations.member_id = members.member_id
+
+JOIN insects
+ON observations.insect_id = insects.insect_id
+
+JOIN locations
+ON observations.location_id = locations.location_id
+
+ORDER BY observations.observation_date DESC;
     """
 
     cursor.execute(querystr)
