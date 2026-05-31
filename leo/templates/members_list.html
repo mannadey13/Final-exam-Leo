@@ -4,10 +4,17 @@
 
 {% block content %}
 
-<h2>Services</h2>
+<h2>Members</h2>
 
-<p class="text-success"><strong>If you can see this page in PythonAnywhere, then your database and connect.py 
-    are correctly configured.</strong>  </p>
+<form method="GET" action="/members">
+
+    <input type="text" name="search" placeholder="Search member">
+
+    <button type="submit">Search</button>
+
+</form>
+
+<br>
 
 <table border="1" cellpadding="10" cellspacing="0" width="100%" style="border-collapse: collapse;">
 
@@ -25,13 +32,17 @@
     </tr>
 
     {% for member in members %}
-    <tr>
-        <td>{{ member[0] }}</td>
-        <td>{{ member[1] }} {{ member[2] }}</td>
-        <td>{{ member[3] }}</td>
-        <td>{{ member[4] }}</td>
-    </tr>
-    {% endfor %}
+<tr>
+    <td>{{ member[0] }}</td>
+    <td>
+        <a href="/member/{{ member[0] }}">
+            {{ member[1] }} {{ member[2] }}
+        </a>
+    </td>
+    <td>{{ member[3] }}</td>
+    <td>{{ member[4] }}</td>
+</tr>
+{% endfor %}
 
 </table>
 

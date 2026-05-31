@@ -29,6 +29,56 @@ def home():
 @app.route("/members")
 def members_list():
 
+    search = request.args.get("search")
+
+    connection = db.get_db()
+    cursor = connection.cursor()
+
+    if search:
+
+        querystr = """
+        SELECT
+            member_id,
+            first_name,
+            last_name,
+            email,
+            phone
+        FROM members
+        WHERE first_name ILIKE %s
+        OR last_name ILIKE %s
+        ORDER BY member_id ASC;
+        """
+
+        cursor.execute(querystr, (f"%{search}%", f"%{search}%"))
+
+    else:
+
+        querystr = """
+        SELECT
+            member_id,
+            first_name,
+            last_name,
+            email,
+            phone
+        FROM members
+        ORDER BY member_id ASC;
+        """
+
+        cursor.execute(querystr)
+
+    members = cursor.fetchall()
+
+    cursor.close()
+
+    return render_template(
+        "members_list.html",
+        members=members
+    )
+
+
+@app.route("/member/<int:member_id>")
+def member_detail(member_id):
+
     connection = db.get_db()
     cursor = connection.cursor()
 
@@ -40,18 +90,18 @@ def members_list():
         email,
         phone
     FROM members
-    ORDER BY member_id ASC;
+    WHERE member_id = %s;
     """
 
-    cursor.execute(querystr)
+    cursor.execute(querystr, (member_id,))
 
-    members = cursor.fetchall()
+    member = cursor.fetchone()
 
     cursor.close()
 
     return render_template(
-        "members_list.html",
-        members=members
+        "member_detail.html",
+        member=member
     )
 
 
